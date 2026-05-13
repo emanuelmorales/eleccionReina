@@ -50,7 +50,7 @@ def editar_candidata(request, pk):
             return redirect('detalle_candidata', pk=candidata.pk)
     else:
         form = CandidataForm(instance=candidata)
-    return render(request, 'candidatas/editar_candidata.html', {'form': form, 'candidata': candidata})
+    return render(request, 'candidatas/editar_candidata.html', {'form': form, 'candidata': candidata, 'errors': form.errors if request.method == 'POST' and not form.is_valid() else None})
 
 def eliminar_candidata(request, pk):
     candidata = get_object_or_404(Candidata, pk=pk)

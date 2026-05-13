@@ -150,6 +150,17 @@
         <div class="profile-meta">
             <div><strong>DNI:</strong> {{ candidata.dni }}</div>
             <div><strong>Edad:</strong> {{ candidata.edad }} años</div>
+            <div><strong>Fecha de Nacimiento:</strong> {{ candidata.fecha_nacimiento }}</div>
+            <div><strong>Curso:</strong> {{ candidata.curso }}° "{{ candidata.division }}"</div>
+            <div><strong>Turno:</strong> {{ candidata.get_turno_display }}</div>
+            <div><strong>Especialidad:</strong> {{ candidata.especialidad }}</div>
+            <div><strong>Estatura:</strong> {{ candidata.estatura }} m</div>
+            {% if candidata.pasatiempos %}
+            <div><strong>Pasatiempos:</strong> {{ candidata.pasatiempos }}</div>
+            {% endif %}
+            {% if candidata.proyectos_aspiraciones %}
+            <div><strong>Proyectos/Aspiraciones:</strong> {{ candidata.proyectos_aspiraciones }}</div>
+            {% endif %}
         </div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
             <a href="{% url 'lista_candidatas' %}" class="btn btn-outline">Volver a la lista</a>

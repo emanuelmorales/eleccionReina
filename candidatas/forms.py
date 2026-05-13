@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from .models import Candidata, Foto
 
 class MultipleFileInput(forms.FileInput):
@@ -17,13 +18,24 @@ class FotoForm(forms.Form):
     )
 
 class CandidataForm(forms.ModelForm):
+    fecha_nacimiento = forms.DateField(
+        input_formats=['%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y'],
+        widget=forms.DateInput(format='%Y-%m-%d', attrs={'class': 'text-input', 'type': 'date'}),
+        required=False,
+        label='Fecha de Nacimiento'
+    )
+    turno = forms.ChoiceField(
+        choices=Candidata.TURNO_CHOICES, 
+        widget=forms.Select(attrs={'class': 'text-input'}), 
+        required=False, 
+        label='Turno'
+    )
+    
     class Meta:
         model = Candidata
-        fields = ['nombre', 'apellido', 'dni', 'edad', 'imagen']
-        widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'text-input'}),
-            'apellido': forms.TextInput(attrs={'class': 'text-input'}),
-            'dni': forms.TextInput(attrs={'class': 'text-input'}),
-            'edad': forms.NumberInput(attrs={'class': 'text-input'}),
-            'imagen': forms.ClearableFileInput(attrs={'class': 'file-input'}),
-        }
+        fields = ['nombre', 'apellido', 'dni', 'edad', 'fecha_nacimiento', 'curso', 'division', 'turno', 'especialidad', 'estatura', 'pasatiempos', 'proyectos_aspiraciones', 'imagen']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.fecha_nacimiento:
+            self.initial['fecha_nacimiento'] = self.instance.fecha_nacimiento.strftime('%Y-%m-%d')
