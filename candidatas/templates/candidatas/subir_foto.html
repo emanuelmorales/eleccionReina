@@ -1,0 +1,31 @@
+{% extends 'candidatas/base.html' %}
+
+{% block title %}Subir Fotos - {{ candidata.nombre }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 style="margin-bottom: 2rem; text-align: center;">Subir Fotos (Múltiple)</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">
+        Sube imágenes para: <strong>{{ candidata.nombre }} {{ candidata.apellido }}</strong>
+    </p>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="id_fotos">Seleccionar Fotos (Puedes elegir varias)</label>
+            <input type="file" name="fotos" id="id_fotos" class="file-input" multiple required>
+        </div>
+
+        <div class="form-group">
+            <label for="id_descripcion">Descripción (Se aplicará a todas)</label>
+            <input type="text" name="descripcion" id="id_descripcion" class="text-input" placeholder="Descripción opcional">
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn" style="flex: 1;">Guardar Fotos</button>
+            <a href="{% url 'detalle_candidata' candidata.pk %}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

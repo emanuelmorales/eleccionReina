@@ -1,0 +1,33 @@
+{% extends 'candidatas/base.html' %}
+
+{% block title %}Nueva Candidata - Reina Fest{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 style="margin-bottom: 2rem; text-align: center;">Registrar Nueva Candidata</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <span class="helptext">{{ field.help_text }}</span>
+                {% endif %}
+                {% if field.errors %}
+                    <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem;">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn" style="flex: 1;">Guardar Candidata</button>
+            <a href="{% url 'lista_candidatas' %}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

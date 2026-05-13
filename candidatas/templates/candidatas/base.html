@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Elección Reina{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #e11d48; /* Rojo Diablos */
+            --secondary-color: #881337; /* Burdeos profundo */
+            --accent-color: #fb7185; /* Rojo suave para acentos */
+            --background-color: #0f172a;
+            --surface-color: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-md: 12px;
+            --radius-lg: 24px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+            --glow: 0 0 20px rgba(225, 29, 72, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--background-color) 0%, #020617 100%);
+            color: var(--text-color);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(225, 29, 72, 0.6);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+
+        .form-container {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .text-input, .file-input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .helptext {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'lista_candidatas' %}" class="logo">😈 Diablos Rojos - EETN1</a>
+            <div class="nav-links">
+                <a href="{% url 'lista_candidatas' %}">Inicio</a>
+                <a href="{% url 'agregar_candidata' %}" class="btn" style="padding: 0.5rem 1rem; margin-left: 1rem;">Nueva Candidata</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>
