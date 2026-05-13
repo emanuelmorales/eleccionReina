@@ -1,6 +1,6 @@
 {% extends 'candidatas/base.html' %}
 
-{% block title %}{{ candidata.nombre }} {{ candidata.apellido }} - Perfil{% endblock %}
+{% block title %}{{ candidatura.nombre }} {{ candidatura.apellido }} - Perfil{% endblock %}
 
 {% block content %}
 <style>
@@ -80,6 +80,7 @@
         overflow: hidden;
         box-shadow: var(--shadow);
         transition: transform 0.3s ease;
+        position: relative;
     }
 
     .masonry-item:hover {
@@ -95,10 +96,6 @@
         padding: 1rem;
         font-size: 0.9rem;
         color: var(--text-muted);
-    }
-
-    .masonry-item {
-        position: relative;
     }
 
     .delete-photo-btn {
@@ -137,54 +134,57 @@
 
 <div class="profile-header">
     <div class="profile-img-container">
-        {% if candidata.imagen %}
-            <img src="{{ candidata.imagen.url }}" alt="{{ candidata.nombre }}" class="profile-img">
+        {% if candidatura.imagen %}
+            <img src="{{ candidatura.imagen.url }}" alt="{{ candidatura.nombre }}" class="profile-img">
         {% else %}
             <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#334155; color:#94a3b8; font-size: 2rem;">
-                👑
+                Corona
             </div>
         {% endif %}
     </div>
     <div class="profile-info">
-        <h1>{{ candidata.nombre }} {{ candidata.apellido }}</h1>
+        <h1>{{ candidatura.nombre }} {{ candidatura.apellido }}</h1>
         <div class="profile-meta">
-            <div><strong>DNI:</strong> {{ candidata.dni }}</div>
-            <div><strong>Edad:</strong> {{ candidata.edad }} años</div>
-            <div><strong>Fecha de Nacimiento:</strong> {{ candidata.fecha_nacimiento }}</div>
-            <div><strong>Curso:</strong> {{ candidata.curso }}° "{{ candidata.division }}"</div>
-            <div><strong>Turno:</strong> {{ candidata.get_turno_display }}</div>
-            <div><strong>Especialidad:</strong> {{ candidata.especialidad }}</div>
-            <div><strong>Estatura:</strong> {{ candidata.estatura }} m</div>
-            {% if candidata.pasatiempos %}
-            <div><strong>Pasatiempos:</strong> {{ candidata.pasatiempos }}</div>
+            <div><strong>DNI:</strong> {{ candidatura.dni }}</div>
+            <div><strong>Edad:</strong> {{ candidatura.edad }} anios</div>
+            <div><strong>Fecha de Nacimiento:</strong> {{ candidatura.fecha_nacimiento }}</div>
+            <div><strong>Curso:</strong> {{ candidatura.curso }} "{{ candidatura.division }}"</div>
+            <div><strong>Turno:</strong> {{ candidatura.get_turno_display }}</div>
+            <div><strong>Especialidad:</strong> {{ candidatura.especialidad }}</div>
+            <div><strong>Estatura:</strong> {{ candidatura.estatura }} m</div>
+            {% if candidatura.pasatiempos %}
+            <div><strong>Pasatiempos:</strong> {{ candidatura.pasatiempos }}</div>
             {% endif %}
-            {% if candidata.proyectos_aspiraciones %}
-            <div><strong>Proyectos/Aspiraciones:</strong> {{ candidata.proyectos_aspiraciones }}</div>
+            {% if candidatura.proyectos_aspiraciones %}
+            <div><strong>Proyectos/Aspiraciones:</strong> {{ candidatura.proyectos_aspiraciones }}</div>
             {% endif %}
         </div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
             <a href="{% url 'lista_candidatas' %}" class="btn btn-outline">Volver a la lista</a>
-            <a href="{% url 'editar_candidata' candidata.pk %}" class="btn" style="background: #3b82f6;">Editar Datos</a>
-            <a href="{% url 'eliminar_candidata' candidata.pk %}" class="btn" style="background: #ef4444;">Eliminar</a>
+            <a href="{% url 'editar_candidata' candidatura.pk %}" class="btn" style="background: #3b82f6;">Editar Datos</a>
+            <a href="{% url 'puntuar_candidata' candidatura.pk %}" class="btn" style="background: #22c55e;">
+                {% if tiene_puntuacion %}Modificar Puntaje{% else %}Puntuar{% endif %}
+            </a>
+            <a href="{% url 'eliminar_candidata' candidatura.pk %}" class="btn" style="background: #ef4444;">Eliminar</a>
         </div>
     </div>
 </div>
 
 <div class="section-title">
-    <h2>Galería de Fotos</h2>
-    <a href="{% url 'subir_foto' candidata.pk %}" class="btn">+ Subir Foto</a>
+    <h2>Galeria de Fotos</h2>
+    <a href="{% url 'subir_foto' candidatura.pk %}" class="btn">+ Subir Foto</a>
 </div>
 
 <div class="masonry">
     {% for foto in fotos %}
     <div class="masonry-item">
-        <img src="{{ foto.imagen.url }}" alt="Foto de {{ candidata.nombre }}" class="masonry-img">
+        <img src="{{ foto.imagen.url }}" alt="Foto de {{ candidatura.nombre }}" class="masonry-img">
         {% if foto.descripcion %}
         <div class="masonry-caption">
             {{ foto.descripcion }}
         </div>
         {% endif %}
-        <button type="button" class="delete-photo-btn" onclick="confirmDeleteFoto({{ foto.pk }}, {{ candidata.pk }})">
+        <button type="button" class="delete-photo-btn" onclick="confirmDeleteFoto({{ foto.pk }}, {{ candidatura.pk }})">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
             </svg>
@@ -192,7 +192,7 @@
     </div>
     {% empty %}
     <div style="grid-column: 1/-1; color: var(--text-muted); text-align: center; padding: 3rem;">
-        No hay fotos en la galería de esta candidata.
+        No hay fotos en la galeria de esta candidata.
     </div>
     {% endfor %}
 </div>
@@ -200,7 +200,7 @@
 <div id="confirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center;">
     <div style="background:var(--surface-color); padding:2rem; border-radius:var(--radius-lg); max-width:400px; text-align:center;">
         <h3 style="margin-bottom:1rem; color:#ef4444;">Eliminar Foto</h3>
-        <p style="margin-bottom:1.5rem; color:var(--text-muted);">¿Estás seguro de que deseas eliminar esta foto?</p>
+        <p style="margin-bottom:1.5rem; color:var(--text-muted);">Estas seguro de que deseas eliminar esta foto?</p>
         <div style="display:flex; gap:1rem; justify-content:center;">
             <button id="confirmDeleteBtn" class="btn" style="background:#ef4444;">Eliminar</button>
             <button onclick="closeModal()" class="btn btn-outline">Cancelar</button>
@@ -219,4 +219,5 @@ function confirmDeleteFoto(fotoPk, candidataPk) {
 function closeModal() {
     document.getElementById('confirmModal').style.display = 'none';
 }
-</script>{% endblock %}
+</script>
+{% endblock %}

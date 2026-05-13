@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Candidata, Foto
+from .models import Candidata, Foto, Puntuacion
 
 @admin.register(Candidata)
 class CandidataAdmin(admin.ModelAdmin):
@@ -10,4 +10,9 @@ class CandidataAdmin(admin.ModelAdmin):
 @admin.register(Foto)
 class FotoAdmin(admin.ModelAdmin):
     list_display = ('candidata', 'descripcion')
+    list_filter = ('candidata',)
+
+@admin.register(Puntuacion)
+class PuntuacionAdmin(admin.ModelAdmin):
+    list_display = ('candidata', 'belleza', 'simpatia', 'elegancia', 'vestimenta', 'maquillaje', 'hinchada', 'total')
     list_filter = ('candidata',)
