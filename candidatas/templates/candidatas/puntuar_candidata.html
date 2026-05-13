@@ -1,0 +1,143 @@
+{% extends 'candidatas/base.html' %}
+
+{% block title %}{% if puntuacion_existente %}Modificar Puntuacion{% else %}Puntuar{% endif %} - Reina Fest{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 style="margin-bottom: 1rem; text-align: center;">
+        {% if puntuacion_existente %}
+            Modificar Puntuacion de {{ candidatura.nombre }} {{ candidatura.apellido }}
+        {% else %}
+            Puntuar a {{ candidatura.nombre }} {{ candidatura.apellido }}
+        {% endif %}
+    </h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Califica a la candidata en cada categoria (1-10 puntos)</p>
+
+    {% if errors %}
+    <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; color: #ef4444;">
+        <strong>Errores en el formulario:</strong>
+        <ul style="margin: 0.5rem 0 0 1.5rem;">
+            {% for field, error_list in errors.items %}
+            {% for error in error_list %}
+            <li>{{ field }}: {{ error }}</li>
+            {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="post" id="puntuacionForm">
+        {% csrf_token %}
+
+        <div class="form-grid">
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem;">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn" style="flex: 1;">
+                {% if puntuacion_existente %}
+                    Guardar Cambios
+                {% else %}
+                    Guardar Puntuacion
+                {% endif %}
+            </button>
+            <a href="{% url 'detalle_candidata' candidatura.pk %}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .score-input {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: var(--radius-md);
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-color);
+        font-family: inherit;
+        font-size: 1.2rem;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .score-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.2);
+    }
+
+    .score-input.error {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        opacity: 1;
+        height: 30px;
+    }
+</style>
+
+<script>
+function validarCampo(input) {
+    var valor = parseInt(input.value);
+    var min = parseInt(input.min);
+    var max = parseInt(input.max);
+    
+    if (input.value === '') {
+        return;
+    }
+    
+    if (isNaN(valor) || valor < min || valor > max) {
+        alert('El valor debe estar entre ' + min + ' y ' + max + ' puntos');
+        input.classList.add('error');
+        input.value = '';
+        input.focus();
+        return false;
+    }
+    
+    input.classList.remove('error');
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var inputs = document.querySelectorAll('.score-input');
+    inputs.forEach(function(input) {
+        input.addEventListener('blur', function() {
+            validarCampo(this);
+        });
+        
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                validarCampo(this);
+            }
+        });
+    });
+    
+    document.getElementById('puntuacionForm').addEventListener('submit', function(e) {
+        var valido = true;
+        inputs.forEach(function(input) {
+            if (!validarCampo(input)) {
+                valido = false;
+            }
+        });
+        
+        if (!valido) {
+            e.preventDefault();
+            alert('Por favor, ingresa valores validos (entre 1 y 10) en todos los campos.');
+        }
+    });
+});
+</script>
+{% endblock %}

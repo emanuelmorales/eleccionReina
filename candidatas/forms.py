@@ -1,6 +1,7 @@
 from django import forms
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
-from .models import Candidata, Foto
+from .models import Candidata, Foto, Puntuacion
 
 class MultipleFileInput(forms.FileInput):
     allow_multiple_selected = True
@@ -13,9 +14,30 @@ class FotoForm(forms.Form):
     )
     descripcion = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'class': 'text-input', 'placeholder': 'Descripción (opcional, se aplicará a todas)'}),
-        label="Descripción"
+        widget=forms.TextInput(attrs={'class': 'text-input', 'placeholder': 'Descripcion (opcional, se aplicara a todas)'}),
+        label="Descripcion"
     )
+
+class PuntuacionForm(forms.ModelForm):
+    class Meta:
+        model = Puntuacion
+        fields = ['belleza', 'simpatia', 'elegancia', 'vestimenta', 'maquillaje', 'hinchada']
+        widgets = {
+            'belleza': forms.NumberInput(attrs={'class': 'score-input', 'min': '1', 'max': '10', 'placeholder': '1-10'}),
+            'simpatia': forms.NumberInput(attrs={'class': 'score-input', 'min': '1', 'max': '10', 'placeholder': '1-10'}),
+            'elegancia': forms.NumberInput(attrs={'class': 'score-input', 'min': '1', 'max': '10', 'placeholder': '1-10'}),
+            'vestimenta': forms.NumberInput(attrs={'class': 'score-input', 'min': '1', 'max': '10', 'placeholder': '1-10'}),
+            'maquillaje': forms.NumberInput(attrs={'class': 'score-input', 'min': '1', 'max': '10', 'placeholder': '1-10'}),
+            'hinchada': forms.NumberInput(attrs={'class': 'score-input', 'min': '1', 'max': '10', 'placeholder': '1-10'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in ['belleza', 'simpatia', 'elegancia', 'vestimenta', 'maquillaje', 'hinchada']:
+            self.fields[field].validators = [
+                MinValueValidator(1),
+                MaxValueValidator(10)
+            ]
 
 class CandidataForm(forms.ModelForm):
     fecha_nacimiento = forms.DateField(

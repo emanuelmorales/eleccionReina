@@ -1,0 +1,20 @@
+{% extends 'candidatas/base.html' %}
+
+{% block title %}Resetear Puntuaciones - Reina Fest{% endblock %}
+
+{% block content %}
+<div class="form-container" style="max-width: 500px; text-align: center;">
+    <h2 style="margin-bottom: 1.5rem; color: #ef4444;">Resetear Puntuaciones</h2>
+    
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+        ¿Estás seguro de que deseas eliminar todas las puntuaciones registradas?<br>
+        Esta acción no se puede deshacer.
+    </p>
+
+    <form method="post" style="display: flex; gap: 1rem;">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="flex: 1; background: #ef4444;">Sí, Resetear Todo</button>
+        <a href="{% url 'resultados' %}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends 'candidatas/base.html' %}
+
+{% block title %}Resultados - Reina Fest{% endblock %}
+
+{% block content %}
+<style>
+    .ranking-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .ranking-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .ranking-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface-color);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+    
+    .ranking-table th,
+    .ranking-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .ranking-table th {
+        background: rgba(225, 29, 72, 0.2);
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+    
+    .ranking-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .ranking-table tr:hover td {
+        background: rgba(255,255,255,0.05);
+    }
+    
+    .posicion {
+        font-size: 1.5rem;
+        font-weight: 700;
+        width: 60px;
+        text-align: center;
+    }
+    
+    .posicion-1 { color: #fbbf24; }
+    .posicion-2 { color: #c0c0c0; }
+    .posicion-3 { color: #cd7f32; }
+    
+    .premio-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .premio-reina { background: linear-gradient(to right, #fbbf24, #f59e0b); color: #000; }
+    .premio-1 { background: linear-gradient(to right, #c0c0c0, #a8a8a8); color: #000; }
+    .premio-2 { background: linear-gradient(to right, #cd7f32, #b5651d); color: #fff; }
+    .premio-3 { background: #9333ea; color: #fff; }
+    .premio-4 { background: #3b82f6; color: #fff; }
+    .premio-5 { background: #06b6d4; color: #fff; }
+    .premio-default { background: var(--surface-color); border: 1px solid var(--primary-color); color: var(--text-color); }
+    
+    .categoria-score {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .categoria-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .categoria-bar span {
+        width: 80px;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+    
+    .bar-container {
+        flex: 1;
+        height: 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .bar-fill {
+        height: 100%;
+        background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+    
+    .total-puntos {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .actions-bar {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .btn-danger {
+        background: #ef4444;
+    }
+</style>
+
+<div class="ranking-container">
+    <div class="ranking-header">
+        <h1 style="margin-bottom: 0.5rem;">Ranking de Candidatas</h1>
+        <p style="color: var(--text-muted);">Puntuación total de todas las categorías</p>
+    </div>
+    
+    <table class="ranking-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Candidata</th>
+                <th>Puntos por Categoría</th>
+                <th>Total</th>
+                <th>Premio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in candidatas %}
+            <tr>
+                <td class="posicion posicion-{% if forloop.counter <= 3 %}{{ forloop.counter }}{% else %}default{% endif %}">
+                    {{ forloop.counter }}
+                </td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        {% if c.imagen %}
+                        <img src="{{ c.imagen.url }}" alt="{{ c.nombre }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                        {% else %}
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center;">👑</div>
+                        {% endif %}
+                        <div>
+                            <strong>{{ c.nombre }} {{ c.apellido }}</strong><br>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">{{ c.curso }}° "{{ c.division }}"</span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="categoria-score">
+                        <div class="categoria-bar">
+                            <span>Belleza</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: {% widthratio c.total_belleza|default:0 60 100 %}%"></div></div>
+                            <strong>{{ c.total_belleza|default:0 }}</strong>
+                        </div>
+                        <div class="categoria-bar">
+                            <span>Simpatía</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: {% widthratio c.total_simpatia|default:0 60 100 %}%"></div></div>
+                            <strong>{{ c.total_simpatia|default:0 }}</strong>
+                        </div>
+                        <div class="categoria-bar">
+                            <span>Elegancia</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: {% widthratio c.total_elegancia|default:0 60 100 %}%"></div></div>
+                            <strong>{{ c.total_elegancia|default:0 }}</strong>
+                        </div>
+                        <div class="categoria-bar">
+                            <span>Vestimenta</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: {% widthratio c.total_vestimenta|default:0 60 100 %}%"></div></div>
+                            <strong>{{ c.total_vestimenta|default:0 }}</strong>
+                        </div>
+                        <div class="categoria-bar">
+                            <span>Maquillaje</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: {% widthratio c.total_maquillaje|default:0 60 100 %}%"></div></div>
+                            <strong>{{ c.total_maquillaje|default:0 }}</strong>
+                        </div>
+                        <div class="categoria-bar">
+                            <span>Hinchada</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: {% widthratio c.total_hinchada|default:0 60 100 %}%"></div></div>
+                            <strong>{{ c.total_hinchada|default:0 }}</strong>
+                        </div>
+                    </div>
+                </td>
+                <td class="total-puntos">{{ c.promedio_total|default:0 }}</td>
+                <td>
+                    {% with forloop.counter as posicion %}
+                        {% if posicion == 1 %}
+                            <span class="premio-badge premio-reina">Reina</span>
+                        {% elif posicion == 2 %}
+                            <span class="premio-badge premio-1">1ra Princesa</span>
+                        {% elif posicion == 3 %}
+                            <span class="premio-badge premio-2">2da Princesa</span>
+                        {% elif posicion == 4 %}
+                            <span class="premio-badge premio-3">1ra Dama de Honor</span>
+                        {% elif posicion == 5 %}
+                            <span class="premio-badge premio-4">2da Dama de Honor</span>
+                        {% elif posicion == 6 %}
+                            <span class="premio-badge premio-5">Miss Elegancia</span>
+                        {% elif posicion == 7 %}
+                            <span class="premio-badge premio-default">Miss Simpatia</span>
+                        {% elif posicion == 8 %}
+                            <span class="premio-badge premio-default">Miss EETN1</span>
+                        {% endif %}
+                    {% endwith %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                    No hay candidatas registradas.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="actions-bar">
+        <a href="{% url 'lista_candidatas' %}" class="btn">Volver al Inicio</a>
+        <form method="post" action="{% url 'resetear_puntuaciones' %}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de resetear todas las puntuaciones?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Resetear Puntuaciones</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
