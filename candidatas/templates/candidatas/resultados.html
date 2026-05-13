@@ -40,8 +40,13 @@
         border-bottom: none;
     }
     
-    .ranking-table tr:hover td {
-        background: rgba(255,255,255,0.05);
+    .ranking-table tbody tr {
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    
+    .ranking-table tbody tr:hover td {
+        background: rgba(255,255,255,0.08);
     }
     
     .posicion {
@@ -122,12 +127,19 @@
     .btn-danger {
         background: #ef4444;
     }
+    
+    .click-hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
 </style>
 
 <div class="ranking-container">
     <div class="ranking-header">
         <h1 style="margin-bottom: 0.5rem;">Ranking de Candidatas</h1>
-        <p style="color: var(--text-muted);">Puntuación total de todas las categorías</p>
+        <p style="color: var(--text-muted);">Puntuacion total de todas las categorias</p>
+        <p class="click-hint">Haz clic en una fila para ver el perfil de la candidata</p>
     </div>
     
     <table class="ranking-table">
@@ -135,14 +147,14 @@
             <tr>
                 <th>#</th>
                 <th>Candidata</th>
-                <th>Puntos por Categoría</th>
+                <th>Puntos por Categoria</th>
                 <th>Total</th>
                 <th>Premio</th>
             </tr>
         </thead>
         <tbody>
             {% for c in candidatas %}
-            <tr>
+            <tr onclick="window.location='{% url 'detalle_candidata' c.pk %}'">
                 <td class="posicion posicion-{% if forloop.counter <= 3 %}{{ forloop.counter }}{% else %}default{% endif %}">
                     {{ forloop.counter }}
                 </td>
@@ -155,7 +167,7 @@
                         {% endif %}
                         <div>
                             <strong>{{ c.nombre }} {{ c.apellido }}</strong><br>
-                            <span style="font-size: 0.85rem; color: var(--text-muted);">{{ c.curso }}° "{{ c.division }}"</span>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">{{ c.curso }} "{{ c.division }}"</span>
                         </div>
                     </div>
                 </td>
@@ -167,7 +179,7 @@
                             <strong>{{ c.total_belleza|default:0 }}</strong>
                         </div>
                         <div class="categoria-bar">
-                            <span>Simpatía</span>
+                            <span>Simpatia</span>
                             <div class="bar-container"><div class="bar-fill" style="width: {% widthratio c.total_simpatia|default:0 60 100 %}%"></div></div>
                             <strong>{{ c.total_simpatia|default:0 }}</strong>
                         </div>
@@ -228,7 +240,7 @@
     
     <div class="actions-bar">
         <a href="{% url 'lista_candidatas' %}" class="btn">Volver al Inicio</a>
-        <form method="post" action="{% url 'resetear_puntuaciones' %}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de resetear todas las puntuaciones?');">
+        <form method="post" action="{% url 'resetear_puntuaciones' %}" style="display: inline;" onsubmit="return confirm('Estas seguro de resetear todas las puntuaciones?');">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Resetear Puntuaciones</button>
         </form>
