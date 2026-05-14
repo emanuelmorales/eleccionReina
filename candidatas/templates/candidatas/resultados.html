@@ -240,10 +240,12 @@
     
     <div class="actions-bar">
         <a href="{% url 'lista_candidatas' %}" class="btn">Volver al Inicio</a>
+        {% if can_reset %}
         <form method="post" action="{% url 'resetear_puntuaciones' %}" style="display: inline;" onsubmit="return confirm('Estas seguro de resetear todas las puntuaciones?');">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Resetear Puntuaciones</button>
         </form>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

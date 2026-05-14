@@ -56,8 +56,9 @@ class CandidataForm(forms.ModelForm):
     
     class Meta:
         model = Candidata
-        fields = ['nombre', 'apellido', 'dni', 'edad', 'fecha_nacimiento', 'curso', 'division', 'turno', 'especialidad', 'estatura', 'pasatiempos', 'proyectos_aspiraciones', 'imagen']
+        fields = ['numero', 'nombre', 'apellido', 'dni', 'edad', 'fecha_nacimiento', 'curso', 'division', 'turno', 'especialidad', 'estatura', 'pasatiempos', 'proyectos_aspiraciones', 'imagen']
         labels = {
+            'numero': 'Numero de Candidata',
             'imagen': 'Foto de Perfil',
         }
         help_texts = {

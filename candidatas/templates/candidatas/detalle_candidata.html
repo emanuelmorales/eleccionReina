@@ -141,10 +141,18 @@
                 Corona
             </div>
         {% endif %}
+        {% if candidatura.numero %}
+        <div style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:var(--primary-color); color:white; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.5rem; box-shadow:0 4px 15px rgba(0,0,0,0.4); border:3px solid white;">
+            {{ candidatura.numero }}
+        </div>
+        {% endif %}
     </div>
     <div class="profile-info">
         <h1>{{ candidatura.nombre }} {{ candidatura.apellido }}</h1>
         <div class="profile-meta">
+            {% if candidatura.numero %}
+            <div><strong>Numero:</strong> {{ candidatura.numero }}</div>
+            {% endif %}
             <div><strong>DNI:</strong> {{ candidatura.dni }}</div>
             <div><strong>Edad:</strong> {{ candidatura.edad }} anios</div>
             <div><strong>Fecha de Nacimiento:</strong> {{ candidatura.fecha_nacimiento }}</div>
@@ -161,18 +169,26 @@
         </div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
             <a href="{% url 'lista_candidatas' %}" class="btn btn-outline">Volver a la lista</a>
+            {% if can_edit %}
             <a href="{% url 'editar_candidata' candidatura.pk %}" class="btn" style="background: #3b82f6;">Editar Datos</a>
+            {% endif %}
+            {% if user_role %}
             <a href="{% url 'puntuar_candidata' candidatura.pk %}" class="btn" style="background: #22c55e;">
                 {% if tiene_puntuacion %}Modificar Puntaje{% else %}Puntuar{% endif %}
             </a>
+            {% endif %}
+            {% if can_delete %}
             <a href="{% url 'eliminar_candidata' candidatura.pk %}" class="btn" style="background: #ef4444;">Eliminar</a>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <div class="section-title">
     <h2>Galeria de Fotos</h2>
+    {% if can_edit %}
     <a href="{% url 'subir_foto' candidatura.pk %}" class="btn">+ Subir Foto</a>
+    {% endif %}
 </div>
 
 <div class="masonry">
