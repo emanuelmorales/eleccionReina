@@ -1,14 +1,59 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Sum, Avg, Count, F
 from django.db.models.functions import Coalesce
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Candidata, Foto, Puntuacion
 from .forms import FotoForm, CandidataForm, PuntuacionForm
+from .decorators import (
+    admin_required, jury_required, get_user_role,
+    can_edit_candidata, can_delete_candidata, can_reset_scores
+)
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('lista_candidatas')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('lista_candidatas')
+        else:
+            messages.error(request, 'Usuario o contraseña incorrectos.')
+    
+    return render(request, 'candidatas/login.html')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+
+def setup_groups(request):
+    from django.contrib.auth.models import Group, Permission
+    from django.contrib.contentmodels import get_content_type
+    
+    admin_group, _ = Group.objects.get_or_create(name='Administrador')
+    jury_group, _ = Group.objects.get_or_create(name='Jurado')
+    
+    return admin_group, jury_group
 
 def lista_candidatas(request):
     candidatas = Candidata.objects.annotate(
         tiene_puntuacion=Count('puntuaciones')
-    ).order_by('nombre', 'apellido')
-    return render(request, 'candidatas/lista_candidatas.html', {'candidatas': candidatas})
+    ).order_by('numero', 'nombre', 'apellido')
+    context = {
+        'candidatas': candidatas,
+        'user_role': get_user_role(request),
+    }
+    return render(request, 'candidatas/lista_candidatas.html', context)
 
 def detalle_candidata(request, pk):
     candidatura = get_object_or_404(Candidata, pk=pk)
@@ -19,9 +64,13 @@ def detalle_candidata(request, pk):
         'candidatura': candidatura,
         'fotos': fotos,
         'puntuacion': puntuacion,
-        'tiene_puntuacion': puntuacion is not None
+        'tiene_puntuacion': puntuacion is not None,
+        'user_role': get_user_role(request),
+        'can_edit': can_edit_candidata(request),
+        'can_delete': can_delete_candidata(request),
     })
 
+@admin_required
 def subir_foto(request, pk):
     candidatura = get_object_or_404(Candidata, pk=pk)
     if request.method == 'POST':
@@ -41,9 +90,11 @@ def subir_foto(request, pk):
 
     return render(request, 'candidatas/subir_foto.html', {
         'candidata': candidatura, 
-        'candidatura': candidatura
+        'candidatura': candidatura,
+        'user_role': get_user_role(request),
     })
 
+@admin_required
 def agregar_candidata(request):
     if request.method == 'POST':
         form = CandidataForm(request.POST, request.FILES)
@@ -52,8 +103,12 @@ def agregar_candidata(request):
             return redirect('lista_candidatas')
     else:
         form = CandidataForm()
-    return render(request, 'candidatas/agregar_candidata.html', {'form': form})
+    return render(request, 'candidatas/agregar_candidata.html', {
+        'form': form,
+        'user_role': get_user_role(request),
+    })
 
+@admin_required
 def editar_candidata(request, pk):
     candidatura = get_object_or_404(Candidata, pk=pk)
     if request.method == 'POST':
@@ -67,22 +122,30 @@ def editar_candidata(request, pk):
         'form': form, 
         'candidata': candidatura,
         'candidatura': candidatura,
-        'errors': form.errors if request.method == 'POST' and not form.is_valid() else None
+        'errors': form.errors if request.method == 'POST' and not form.is_valid() else None,
+        'user_role': get_user_role(request),
     })
 
+@admin_required
 def eliminar_candidata(request, pk):
     candidatura = get_object_or_404(Candidata, pk=pk)
     if request.method == 'POST':
         candidatura.delete()
         return redirect('lista_candidatas')
-    return render(request, 'candidatas/eliminar_candidata.html', {'candidata': candidatura, 'candidatura': candidatura})
+    return render(request, 'candidatas/eliminar_candidata.html', {
+        'candidata': candidatura,
+        'candidatura': candidatura,
+        'user_role': get_user_role(request),
+    })
 
+@admin_required
 def eliminar_foto(request, pk):
     foto = get_object_or_404(Foto, pk=pk)
     candidata_pk = foto.candidatura.pk
     foto.delete()
     return redirect('detalle_candidata', pk=candidata_pk)
 
+@jury_required
 def puntuar_candidata(request, pk):
     candidatura = get_object_or_404(Candidata, pk=pk)
     puntuacion_existente = Puntuacion.objects.filter(candidatura=candidatura).first()
@@ -116,7 +179,8 @@ def puntuar_candidata(request, pk):
         'candidata': candidatura, 
         'candidatura': candidatura,
         'errors': errors,
-        'puntuacion_existente': puntuacion_existente is not None
+        'puntuacion_existente': puntuacion_existente is not None,
+        'user_role': get_user_role(request),
     })
 
 def resultados(request):
@@ -134,10 +198,15 @@ def resultados(request):
 
     return render(request, 'candidatas/resultados.html', {
         'candidatas': candidatas,
+        'user_role': get_user_role(request),
+        'can_reset': can_reset_scores(request),
     })
 
+@admin_required
 def resetear_puntuaciones(request):
     if request.method == 'POST':
         Puntuacion.objects.all().delete()
         return redirect('resultados')
-    return render(request, 'candidatas/resetear_puntuaciones.html')
+    return render(request, 'candidatas/resetear_puntuaciones.html', {
+        'user_role': get_user_role(request),
+    })

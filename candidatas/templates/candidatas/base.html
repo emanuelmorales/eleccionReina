@@ -216,7 +216,14 @@
             <div class="nav-links">
                 <a href="{% url 'lista_candidatas' %}">Inicio</a>
                 <a href="{% url 'resultados' %}">Resultados</a>
-                <a href="{% url 'agregar_candidata' %}" class="btn" style="padding: 0.5rem 1rem; margin-left: 1rem;">Nueva Candidata</a>
+                {% if user.is_authenticated %}
+                    {% if user_role == 'administrador' %}
+                        <a href="{% url 'agregar_candidata' %}" class="btn" style="padding: 0.5rem 1rem; margin-left: 1rem;">Nueva Candidata</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="btn btn-outline" style="padding: 0.5rem 1rem; margin-left: 0.5rem;">Cerrar Sesion ({{ user.username }})</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn" style="padding: 0.5rem 1rem; margin-left: 1rem;">Iniciar Sesion</a>
+                {% endif %}
             </div>
         </nav>
     </header>

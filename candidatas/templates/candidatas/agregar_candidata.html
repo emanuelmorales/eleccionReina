@@ -11,8 +11,14 @@
         
         <div class="form-grid">
             {% for field in form %}
-            <div class="form-group{% if field.name == 'pasatiempos' or field.name == 'proyectos_aspiraciones' or field.name == 'imagen' %} full-width{% endif %}">
+            <div class="form-group{% if field.name == 'pasatiempos' or field.name == 'proyectos_aspiraciones' or field.name == 'imagen' %} full-width{% endif %}{% if field.name == 'numero' %} full-width{% endif %}">
+                {% if field.name == 'numero' %}
+                <label for="{{ field.id_for_label }}" style="color: var(--primary-color); font-size: 1.1rem;">
+                    {{ field.label }} <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: normal;">(numero que representara a la candidata)</span>
+                </label>
+                {% else %}
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {% endif %}
                 {{ field }}
                 {% if field.name == 'imagen' %}
                 <div class="info-image-box">
