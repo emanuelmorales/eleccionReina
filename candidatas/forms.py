@@ -10,7 +10,8 @@ class FotoForm(forms.Form):
     fotos_subidas = forms.FileField(
         widget=MultipleFileInput(attrs={'class': 'file-input', 'multiple': True}),
         label="Seleccionar Fotos",
-        required=False
+        required=False,
+        help_text="Recomendado: Fotos verticales 600x800px para la galeria. Se recortaran automaticamente. Formatos: JPG, PNG"
     )
     descripcion = forms.CharField(
         required=False,
@@ -56,6 +57,12 @@ class CandidataForm(forms.ModelForm):
     class Meta:
         model = Candidata
         fields = ['nombre', 'apellido', 'dni', 'edad', 'fecha_nacimiento', 'curso', 'division', 'turno', 'especialidad', 'estatura', 'pasatiempos', 'proyectos_aspiraciones', 'imagen']
+        labels = {
+            'imagen': 'Foto de Perfil',
+        }
+        help_texts = {
+            'imagen': 'Recomendado: Foto cuadrada 400x400px. Se recortara automaticamente si es necesario. Formatos: JPG, PNG',
+        }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

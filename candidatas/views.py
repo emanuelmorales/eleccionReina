@@ -11,34 +11,38 @@ def lista_candidatas(request):
     return render(request, 'candidatas/lista_candidatas.html', {'candidatas': candidatas})
 
 def detalle_candidata(request, pk):
-    candidata = get_object_or_404(Candidata, pk=pk)
-    fotos = candidata.fotos.all()
-    puntuacion = Puntuacion.objects.filter(candidata=candidata).first()
+    candidatura = get_object_or_404(Candidata, pk=pk)
+    fotos = candidatura.fotos.all()
+    puntuacion = Puntuacion.objects.filter(candidatura=candidatura).first()
     return render(request, 'candidatas/detalle_candidata.html', {
-        'candidata': candidata,
-        'candidatura': candidata,
+        'candidata': candidatura,
+        'candidatura': candidatura,
         'fotos': fotos,
         'puntuacion': puntuacion,
         'tiene_puntuacion': puntuacion is not None
     })
 
 def subir_foto(request, pk):
-    candidata = get_object_or_404(Candidata, pk=pk)
+    candidatura = get_object_or_404(Candidata, pk=pk)
     if request.method == 'POST':
         files = request.FILES.getlist('fotos')
         descripcion = request.POST.get('descripcion', '')
 
         if files:
             for f in files:
-                Foto.objects.create(candidata=candidata, imagen=f, descripcion=descripcion)
-            return redirect('detalle_candidata', pk=candidata.pk)
+                Foto.objects.create(candidatura=candidatura, imagen=f, descripcion=descripcion)
+            return redirect('detalle_candidata', pk=candidatura.pk)
         else:
             return render(request, 'candidatas/subir_foto.html', {
-                'candidata': candidata,
+                'candidata': candidatura,
+                'candidatura': candidatura,
                 'error': 'No se seleccionaron archivos.'
             })
 
-    return render(request, 'candidatas/subir_foto.html', {'candidata': candidata})
+    return render(request, 'candidatas/subir_foto.html', {
+        'candidata': candidatura, 
+        'candidatura': candidatura
+    })
 
 def agregar_candidata(request):
     if request.method == 'POST':
@@ -51,37 +55,37 @@ def agregar_candidata(request):
     return render(request, 'candidatas/agregar_candidata.html', {'form': form})
 
 def editar_candidata(request, pk):
-    candidata = get_object_or_404(Candidata, pk=pk)
+    candidatura = get_object_or_404(Candidata, pk=pk)
     if request.method == 'POST':
-        form = CandidataForm(request.POST, request.FILES, instance=candidata)
+        form = CandidataForm(request.POST, request.FILES, instance=candidatura)
         if form.is_valid():
             form.save()
-            return redirect('detalle_candidata', pk=candidata.pk)
+            return redirect('detalle_candidata', pk=candidatura.pk)
     else:
-        form = CandidataForm(instance=candidata)
+        form = CandidataForm(instance=candidatura)
     return render(request, 'candidatas/editar_candidata.html', {
         'form': form, 
-        'candidata': candidata,
-        'candidatura': candidata,
+        'candidata': candidatura,
+        'candidatura': candidatura,
         'errors': form.errors if request.method == 'POST' and not form.is_valid() else None
     })
 
 def eliminar_candidata(request, pk):
-    candidata = get_object_or_404(Candidata, pk=pk)
+    candidatura = get_object_or_404(Candidata, pk=pk)
     if request.method == 'POST':
-        candidata.delete()
+        candidatura.delete()
         return redirect('lista_candidatas')
-    return render(request, 'candidatas/eliminar_candidata.html', {'candidata': candidata, 'candidatura': candidata})
+    return render(request, 'candidatas/eliminar_candidata.html', {'candidata': candidatura, 'candidatura': candidatura})
 
 def eliminar_foto(request, pk):
     foto = get_object_or_404(Foto, pk=pk)
-    candidata_pk = foto.candidata.pk
+    candidata_pk = foto.candidatura.pk
     foto.delete()
     return redirect('detalle_candidata', pk=candidata_pk)
 
 def puntuar_candidata(request, pk):
-    candidata = get_object_or_404(Candidata, pk=pk)
-    puntuacion_existente = Puntuacion.objects.filter(candidata=candidata).first()
+    candidatura = get_object_or_404(Candidata, pk=pk)
+    puntuacion_existente = Puntuacion.objects.filter(candidatura=candidatura).first()
     
     if request.method == 'POST':
         form = PuntuacionForm(request.POST)
@@ -96,9 +100,9 @@ def puntuar_candidata(request, pk):
                 puntuacion_existente.save()
             else:
                 puntuacion = form.save(commit=False)
-                puntuacion.candidata = candidata
+                puntuacion.candidatura = candidatura
                 puntuacion.save()
-            return redirect('detalle_candidata', pk=candidata.pk)
+            return redirect('detalle_candidata', pk=candidatura.pk)
         errors = form.errors
     else:
         if puntuacion_existente:
@@ -109,8 +113,8 @@ def puntuar_candidata(request, pk):
     
     return render(request, 'candidatas/puntuar_candidata.html', {
         'form': form, 
-        'candidata': candidata, 
-        'candidatura': candidata,
+        'candidata': candidatura, 
+        'candidatura': candidatura,
         'errors': errors,
         'puntuacion_existente': puntuacion_existente is not None
     })

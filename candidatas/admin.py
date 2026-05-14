@@ -9,10 +9,10 @@ class CandidataAdmin(admin.ModelAdmin):
 
 @admin.register(Foto)
 class FotoAdmin(admin.ModelAdmin):
-    list_display = ('candidata', 'descripcion')
-    list_filter = ('candidata',)
+    list_display = ('candidatura', 'descripcion')
+    list_filter = ('candidatura',)
 
 @admin.register(Puntuacion)
 class PuntuacionAdmin(admin.ModelAdmin):
-    list_display = ('candidata', 'belleza', 'simpatia', 'elegancia', 'vestimenta', 'maquillaje', 'hinchada', 'total')
-    list_filter = ('candidata',)
+    list_display = ('candidatura', 'belleza', 'simpatia', 'elegancia', 'vestimenta', 'maquillaje', 'hinchada', 'total')
+    list_filter = ('candidatura',)
