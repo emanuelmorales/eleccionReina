@@ -1,31 +1,71 @@
 {% extends 'candidatas/base.html' %}
 
-{% block title %}Subir Fotos - {{ candidata.nombre }}{% endblock %}
+{% block title %}Subir Fotos - {{ candidatura.nombre }}{% endblock %}
 
 {% block content %}
 <div class="form-container">
-    <h2 style="margin-bottom: 2rem; text-align: center;">Subir Fotos (Múltiple)</h2>
+    <h2 style="margin-bottom: 2rem; text-align: center;">Subir Fotos (Multiple)</h2>
     <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">
-        Sube imágenes para: <strong>{{ candidata.nombre }} {{ candidata.apellido }}</strong>
+        Sube imagenes para: <strong>{{ candidatura.nombre }} {{ candidatura.apellido }}</strong>
     </p>
+
+    <div class="info-box">
+        <h3>Informacion importante sobre las fotos</h3>
+        <ul>
+            <li><strong>Formato recomendado:</strong> Fotos verticales (mas altas que anchas)</li>
+            <li><strong>Tamano ideal:</strong> 600px de ancho x 800px de alto</li>
+            <li><strong>Formatos aceptados:</strong> JPG, PNG</li>
+            <li><strong>Recorte automatico:</strong> Las fotos se ajustaran automaticamente al tamano correcto</li>
+        </ul>
+    </div>
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         
         <div class="form-group">
             <label for="id_fotos">Seleccionar Fotos (Puedes elegir varias)</label>
-            <input type="file" name="fotos" id="id_fotos" class="file-input" multiple required>
+            <input type="file" name="fotos" id="id_fotos" class="file-input" multiple required accept="image/jpeg,image/png">
         </div>
 
         <div class="form-group">
-            <label for="id_descripcion">Descripción (Se aplicará a todas)</label>
-            <input type="text" name="descripcion" id="id_descripcion" class="text-input" placeholder="Descripción opcional">
+            <label for="id_descripcion">Descripcion (Se aplicara a todas)</label>
+            <input type="text" name="descripcion" id="id_descripcion" class="text-input" placeholder="Descripcion opcional">
         </div>
 
         <div style="display: flex; gap: 1rem; margin-top: 2rem;">
             <button type="submit" class="btn" style="flex: 1;">Guardar Fotos</button>
-            <a href="{% url 'detalle_candidata' candidata.pk %}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancelar</a>
+            <a href="{% url 'detalle_candidata' candidatura.pk %}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancelar</a>
         </div>
     </form>
 </div>
+
+<style>
+    .info-box {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .info-box h3 {
+        margin: 0 0 1rem 0;
+        color: #60a5fa;
+        font-size: 1rem;
+    }
+    
+    .info-box ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .info-box li {
+        margin-bottom: 0.5rem;
+        color: var(--text-muted);
+    }
+    
+    .info-box strong {
+        color: var(--text-color);
+    }
+</style>
 {% endblock %}
